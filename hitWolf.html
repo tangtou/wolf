@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<title>Document</title>
+		<style type="text/css">
+		*{ 
+			margin:0;
+		    padding:0; 
+		    font-family:"微软雅黑";
+		}
+		#outer{ 
+			background:url(img/game_bg.jpg) 0 0 no-repeat; 
+			height:480px; 
+			width:320px;
+		    position:relative;
+		}
+		#scoring{ 
+			position:absolute; 
+			font-weight:bold; 
+			font-size:16px; 
+			color:white; 
+			left:65px; 
+			top:13px;
+		}
+		#countDown{ 
+			position:absolute; 
+			background:url(img/progress.png) 0 0 no-repeat; 
+			width:180px; 
+			height:16px; 
+			left: 63px;
+			top: 66px;
+		}
+		#wolfs img{ 
+			position:absolute;
+		}
+		#menu{ 
+			position:absolute; 
+			width:320px; 
+			text-align:center; 
+			left:0; 
+			top:200px;
+		}
+		#start,#handle,#gameOver{ 
+			line-height:50px; 
+			font-size:30px; 
+			font-weight:bold; 
+			color:#F60; 
+			text-shadow:0 0 5px #FFFF00; 
+			display:block; 
+			text-decoration:none;
+		}
+		#gameOver{ 
+			position:absolute; 
+			width:320px; 
+			text-align:center; 
+			top:200px; 
+			left:0; 
+			display:none;
+		}
+	</style>	
+	</head>
+	<body>
+	<div id="outer">
+		<div id="scoring">0</div><!--这是分数-->
+	    <div id="countDown"></div><!--倒计时-->
+	    <div id="wolfs">
+	    	 <!--<img src="img/h5.png"/>--> 
+	    </div><!--灰太狼们-->
+	    <div id="menu">
+	        <a href="#" id="start">开始</a>
+	        <a href="#" id="handle">游戏操作说明</a>
+	    </div>
+	    <div id="gameOver">game over!</div>
+	</div>			
+	</body>
+	<script>
+	var scors=document.getElementById("scoring");
+	var counts=document.getElementById("countDown");
+	var wolfs=document.getElementById("wolfs");
+	var menu=document.getElementById("menu");
+	var gameOver=document.getElementById("gameOver");
+	var start=document.getElementById("start");
+	var arrPos=[{l:"98px",t:"115px"},{l:"17px",t:"160px"},{l:"15px",t:"220px"},{l:"30px",t:"293px"},{l:"122px",t:"273px"},{l:"207px",t:"295px"},{l:"200px",t:"211px"},{l:"187px",t:"141px"},{l:"100px",t:"185px"}];
+
+	function rand(min,max){
+		return  parseInt(Math.random()*(max-min)+min);
+
+	}
+
+	// console.log(rand(0,5));
+	var sum=0;
+	start.onclick=function(){
+		menu.innerHTML="";
+		var n=180;
+		var timer=setInterval(function(){			
+			n--;
+			if (n<=0) {
+				clearInterval(timer);
+				clearInterval(kaiTimer);
+				gameOver.style.display="block";
+			}
+			counts.style.width=n+"px";
+		},100);
+	var	kaiTimer=setInterval(function(){
+			var imgs=document.createElement("img");
+			imgs.type=rand(0,100)>70?"x":"h";
+			imgs.index=0;
+			imgs.src="img/"+imgs.type+imgs.index+".png";
+			var nowWolfs=wolfs.children;
+			var bol=true;
+			while(bol){
+			var h=rand(0,arrPos.length);
+			for (var i = 0; i < nowWolfs.length; i++) {
+					if (nowWolfs[i].offsetLeft==parseInt(arrPos[h].l)) {
+						break;
+					}
+				
+				}if (i==nowWolfs.length) {
+					bol=false;
+				}	
+			}
+			// console.log(nowWolfs.offsetLeft);
+			console.log(parseInt(arrPos[h].l));
+			imgs.style.left=arrPos[h].l;
+			imgs.style.top=arrPos[h].t;
+			
+			wolfs.appendChild(imgs);
+			var upTimer=setInterval(function(){
+				imgs.index++;
+				if (imgs.index>4) {
+					clearInterval(upTimer);
+					xiaqu();
+				}
+				imgs.src="img/"+imgs.type+imgs.index+".png";
+			},150)
+			var downTimer=null;
+			function xiaqu(){
+			downTimer=setInterval(function(){
+					imgs.index--;
+					if (imgs.index<=0) {
+						clearInterval(downTimer);
+						wolfs.removeChild(imgs);
+					}
+					imgs.src="img/"+imgs.type+imgs.index+".png";
+				},150)
+			}	
+			var boll=true;
+			var dTimer=null;	
+			imgs.onclick=function(){
+				if (imgs.type=="x") {
+					sum-=10;
+				}else{
+					sum+=10;
+				}
+				scors.innerHTML=sum;
+				if (boll=false) {
+					return;
+				}
+				boll=false;
+				imgs.index=5;
+				clearInterval(upTimer);
+				clearInterval(downTimer);
+				clearInterval(dTimer)
+				dTimer=setInterval(function(){
+					imgs.index++;
+					if (imgs.index>8) {
+						clearInterval(dTimer);
+						wolfs.removeChild(imgs);
+					}
+				imgs.src="img/"+imgs.type+imgs.index+".png";
+				},150)
+			}
+		},1000)
+
+	}	
+	</script>	
+</html>
